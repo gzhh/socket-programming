@@ -15,3 +15,18 @@ https://www.php.net/manual/zh/book.sockets.php
 - socket_recv ( resource $socket , string &$buf , int $len , int $flags ) : int
 - socket_send ( Socket $socket , string $data , int $length , int $flags ) : int|false
 - socket_strerror(socket_last_error($socket))
+
+### 常用预定义常量
+**domain**
+AF_UNIX (integer)
+AF_INET (integer)
+AF_INET6 (integer)
+
+**type**
+SOCK_STREAM (integer)
+SOCK_DGRAM (integer)
+
+**protocol**
+SOL_SOCKET (integer)
+SOL_TCP (integer)
+SOL_UDP (integer)
