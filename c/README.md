@@ -1,6 +1,6 @@
 ### Wiki
-https://en.wikipedia.org/wiki/Berkeley_sockets
-https://man7.org/linux/man-pages/man2/socket.2.html
+- https://en.wikipedia.org/wiki/Berkeley_sockets
+- https://man7.org/linux/man-pages/man2/socket.2.html
 
 ### 重点函数
 - socket
@@ -35,3 +35,6 @@ https://man7.org/linux/man-pages/man2/socket.2.html
 - IPPROTO_UDP
 - IPPROTO_SCTP
 - IPPROTO_DCCP
+
+### Ref
+- https://www.cnblogs.com/skynet/archive/2010/12/12/1903949.html
