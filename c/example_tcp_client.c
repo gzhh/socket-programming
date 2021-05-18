@@ -1,53 +1,40 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include<errno.h>
-#include<sys/types.h>
-#include<sys/socket.h>
-#include<netinet/in.h>
-#include <fcntl.h> // for open
-#include <unistd.h> // for close
-#include <arpa/inet.h> // for inet_pton
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
-#define MAXLINE 4096
-
-int main(int argc, char** argv)
+int main(void)
 {
-    int    sockfd, n;
-    char    recvline[4096], sendline[4096];
-    struct sockaddr_in    servaddr;
 
-    if( argc != 2){
-    printf("usage: ./client <ipaddress>\n");
-    exit(0);
-    }
+struct sockaddr_in sa;
+int res;
+int SocketFD;
 
-    if( (sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
-    printf("create socket error: %s(errno: %d)\n", strerror(errno),errno);
-    exit(0);
-    }
+SocketFD = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+if (SocketFD == -1) {
+  perror("cannot create socket");
+  exit(EXIT_FAILURE);
+}
 
-    memset(&servaddr, 0, sizeof(servaddr));
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_port = htons(6666);
-    if( inet_pton(AF_INET, argv[1], &servaddr.sin_addr) <= 0){
-    printf("inet_pton error for %s\n",argv[1]);
-    exit(0);
-    }
+memset(&sa, 0, sizeof sa);
 
-    if( connect(sockfd, (struct sockaddr*)&servaddr, sizeof(servaddr)) < 0){
-    printf("connect error: %s(errno: %d)\n",strerror(errno),errno);
-    exit(0);
-    }
+sa.sin_family = AF_INET;
+sa.sin_port = htons(1100);
+res = inet_pton(AF_INET, "127.0.0.1", &sa.sin_addr);
 
-    printf("send msg to server: \n");
-    fgets(sendline, 4096, stdin);
-    if( send(sockfd, sendline, strlen(sendline), 0) < 0)
-    {
-    printf("send msg error: %s(errno: %d)\n", strerror(errno), errno);
-    exit(0);
-    }
+if (connect(SocketFD, (struct sockaddr *)&sa, sizeof sa) == -1) {
+  perror("connect failed");
+  close(SocketFD);
+  exit(EXIT_FAILURE);
+}
 
-    close(sockfd);
-    exit(0);
+/* perform read write operations ... */
+
+close(SocketFD);
+return EXIT_SUCCESS;
+
 }

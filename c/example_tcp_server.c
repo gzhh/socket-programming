@@ -1,53 +1,63 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include<errno.h>
-#include<sys/types.h>
-#include<sys/socket.h>
-#include<netinet/in.h>
-#include <fcntl.h> // for open
-#include <unistd.h> // for close
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
-#define MAXLINE 4096
-
-int main(int argc, char** argv)
+int main(void)
 {
-    int    listenfd, connfd;
-    struct sockaddr_in     servaddr;
-    char    buff[4096];
-    int     n;
 
-    if( (listenfd = socket(AF_INET, SOCK_STREAM, 0)) == -1 ){
-    printf("create socket error: %s(errno: %d)\n",strerror(errno),errno);
-    exit(0);
-    }
+struct sockaddr_in sa;
+int SocketFD = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+if (SocketFD == -1) {
+  perror("cannot create socket");
+  exit(EXIT_FAILURE);
+}
 
-    memset(&servaddr, 0, sizeof(servaddr));
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    servaddr.sin_port = htons(6666);
+memset(&sa, 0, sizeof sa);
 
-    if( bind(listenfd, (struct sockaddr*)&servaddr, sizeof(servaddr)) == -1){
-    printf("bind socket error: %s(errno: %d)\n",strerror(errno),errno);
-    exit(0);
-    }
+sa.sin_family = AF_INET;
+sa.sin_port = htons(1100);
+sa.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    if( listen(listenfd, 10) == -1){
-    printf("listen socket error: %s(errno: %d)\n",strerror(errno),errno);
-    exit(0);
-    }
+if (bind(SocketFD,(struct sockaddr *)&sa, sizeof sa) == -1) {
+  perror("bind failed");
+  close(SocketFD);
+  exit(EXIT_FAILURE);
+}
 
-    printf("======waiting for client's request======\n");
-    while(1){
-    if( (connfd = accept(listenfd, (struct sockaddr*)NULL, NULL)) == -1){
-        printf("accept socket error: %s(errno: %d)",strerror(errno),errno);
-        continue;
-    }
-    n = recv(connfd, buff, MAXLINE, 0);
-    buff[n] = '\0';
-    printf("recv msg from client: %s\n", buff);
-    close(connfd);
-    }
+if (listen(SocketFD, 10) == -1) {
+  perror("listen failed");
+  close(SocketFD);
+  exit(EXIT_FAILURE);
+}
 
-    close(listenfd);
+for (;;) {
+  int ConnectFD = accept(SocketFD, NULL, NULL);
+
+  if (ConnectFD == -1) {
+    perror("accept failed");
+    close(SocketFD);
+    exit(EXIT_FAILURE);
+  }
+
+  /* perform read write operations ... 
+  read(ConnectFD, buff, size)
+  */
+
+  if (shutdown(ConnectFD, SHUT_RDWR) == -1) {
+    perror("shutdown failed");
+    close(ConnectFD);
+    close(SocketFD);
+    exit(EXIT_FAILURE);
+  }
+  close(ConnectFD);
+}
+
+close(SocketFD);
+return EXIT_SUCCESS;
+
 }
