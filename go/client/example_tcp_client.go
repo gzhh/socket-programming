@@ -11,7 +11,7 @@ import (
 // Application constants, defining host, port, and protocol.
 const (
 	connHost = "localhost"
-	connPort = "8080"
+	connPort = "9999"
 	connType = "tcp"
 )
 
