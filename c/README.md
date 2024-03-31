@@ -1,4 +1,5 @@
 ### Wiki
+- https://en.wikipedia.org/wiki/Network_socket
 - https://en.wikipedia.org/wiki/Berkeley_sockets
 - https://man7.org/linux/man-pages/man2/socket.2.html
 
